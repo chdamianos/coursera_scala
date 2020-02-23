@@ -1,4 +1,4 @@
-name := "week1"
+name := "prog_func"
 
 version := "0.1"
 
