@@ -8,49 +8,49 @@ class RecFunSuite {
 
   // ------ balance tests -----------------------------------------------------
 
-  @Test def `balance: '(if (zero? x) max (/ 1 x))' is balanced`: Unit =
+  @Test def `balance: '(if (zero? x) max (/ 1 x))' is balanced`(): Unit =
     assert(balance("(if (zero? x) max (/ 1 x))".toList))
 
-  @Test def `balance: 'I told him ...' is balanced`: Unit =
+  @Test def `balance: 'I told him ...' is balanced`(): Unit =
     assert(balance("I told him (that it's not (yet) done).\n(But he wasn't listening)".toList))
 
-  @Test def `balance: ':-)' is unbalanced`: Unit =
+  @Test def `balance: ':-)' is unbalanced`(): Unit =
     assert(!balance(":-)".toList))
 
-  @Test def `balance: counting is not enough`: Unit =
+  @Test def `balance: counting is not enough`(): Unit =
     assert(!balance("())(".toList))
 
-  @Test def `balance: too many open`: Unit =
+  @Test def `balance: too many open`(): Unit =
     assert(!balance("(((()".toList))
 
-  @Test def `balance: empty string`: Unit =
+  @Test def `balance: empty string`(): Unit =
     assert(!balance("".toList))
 
-  @Test def `balance: string without parantheses`: Unit =
+  @Test def `balance: string without parantheses`(): Unit =
     assert(!balance("some string".toList))
   // ------ countChange tests -------------------------------------------------
 
-  @Test def `countChange: example given in instructions`: Unit =
+  @Test def `countChange: example given in instructions`(): Unit =
     assertEquals(3, countChange(4,List(1,2)))
 
-  @Test def `countChange: sorted CHF`: Unit =
+  @Test def `countChange: sorted CHF`(): Unit =
     assertEquals(1022, countChange(300,List(5,10,20,50,100,200,500)))
 
-  @Test def `countChange: no pennies`: Unit =
+  @Test def `countChange: no pennies`(): Unit =
     assertEquals(0, countChange(301,List(5,10,20,50,100,200,500)))
 
-  @Test def `countChange: unsorted CHF`: Unit =
+  @Test def `countChange: unsorted CHF`(): Unit =
     assertEquals(1022, countChange(300,List(500,5,50,100,20,200,10)))
 
   // ------ pascal tests ------------------------------------------------------
 
-  @Test def `pascal: col=0,row=2`: Unit =
+  @Test def `pascal: col=0,row=2`(): Unit =
     assertEquals(1, pascal(0, 2))
 
-  @Test def `pascal: col=1,row=2`: Unit =
+  @Test def `pascal: col=1,row=2`(): Unit =
     assertEquals(2, pascal(1, 2))
 
-  @Test def `pascal: col=1,row=3`: Unit =
+  @Test def `pascal: col=1,row=3`(): Unit =
     assertEquals(3, pascal(1, 3))
 
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
