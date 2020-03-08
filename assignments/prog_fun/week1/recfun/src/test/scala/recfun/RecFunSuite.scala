@@ -20,6 +20,14 @@ class RecFunSuite {
   @Test def `balance: counting is not enough`: Unit =
     assert(!balance("())(".toList))
 
+  @Test def `balance: too many open`: Unit =
+    assert(!balance("(((()".toList))
+
+  @Test def `balance: empty string`: Unit =
+    assert(!balance("".toList))
+
+  @Test def `balance: string without parantheses`: Unit =
+    assert(!balance("some string".toList))
   // ------ countChange tests -------------------------------------------------
 
   @Test def `countChange: example given in instructions`: Unit =

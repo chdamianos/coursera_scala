@@ -9,6 +9,7 @@ object RecFun extends RecFunInterface {
         print(s"${pascal(col, row)} ")
       println()
     }
+
   }
 
   /**
@@ -27,7 +28,37 @@ object RecFun extends RecFunInterface {
   /**
    * Exercise 2
    */
-  def balance(chars: List[Char]): Boolean = ???
+  def balance(chars: List[Char]): Boolean = {
+    @scala.annotation.tailrec
+    def inner_func(chars: List[Char], numOpens: Int, numParentheses: Int): Boolean = {
+      if (chars.nonEmpty) {
+        val firstChar = chars.head
+        var n: Int = numOpens
+        var nPare: Int = numParentheses
+        if (firstChar == '(') {
+          n = n + 1
+          nPare = nPare + 1
+        } else if (firstChar == ')') {
+          n = n - 1
+          nPare = nPare + 1
+        }
+        if (n < 0) {
+          false
+        } else {
+          inner_func(chars.tail, n, nPare)
+        }
+      } else {
+        if (numOpens == 0 && chars.nonEmpty && numParentheses > 0) {
+          true
+        } else {
+          false
+        }
+      }
+    }
+
+    inner_func(chars, 0, 0)
+  }
+
 
   /**
    * Exercise 3
