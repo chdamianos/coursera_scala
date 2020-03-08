@@ -1,6 +1,10 @@
 package recfun
 
+import org.junit._
+import org.junit.Assert.assertEquals
+
 class RecFunSuite {
+  import RecFun._
 
   // ------ balance tests -----------------------------------------------------
 
