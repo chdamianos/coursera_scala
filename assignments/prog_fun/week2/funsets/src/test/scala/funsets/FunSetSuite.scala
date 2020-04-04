@@ -95,5 +95,16 @@ class FunSetSuite {
     }
   }
 
+  @Test def `filter keeps elements satisfying condition`: Unit = {
+    new TestSets {
+      def p(elem: Int): Boolean = elem!=2
+      val s12 = union(s1, s2)
+      val s123 = union(s12, s3)
+      val s123_filt = filter(s123, p)
+      assert(contains(s123_filt, 1), "Filter 1")
+      assert(!contains(s123_filt, 2), "Filter 2")
+      assert(contains(s123_filt, 3), "Filter 3")
+    }
+  }
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
 }

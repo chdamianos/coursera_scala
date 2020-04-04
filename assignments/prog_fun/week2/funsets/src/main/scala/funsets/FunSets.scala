@@ -27,7 +27,7 @@ trait FunSets extends FunSetsInterface {
    */
   def union(s: FunSet, t: FunSet): FunSet =
     (x: Int) =>
-      (contains(s, x) || contains(t, x))
+      contains(s, x) || contains(t, x)
 
   /**
    * Returns the intersection of the two given sets,
@@ -35,7 +35,7 @@ trait FunSets extends FunSetsInterface {
    */
   def intersect(s: FunSet, t: FunSet): FunSet =
     (x: Int) =>
-      (contains(s, x) && contains(t, x))
+      contains(s, x) && contains(t, x)
 
   /**
    * Returns the difference of the two given sets,
@@ -48,8 +48,8 @@ trait FunSets extends FunSetsInterface {
   /**
    * Returns the subset of `s` for which `p` holds.
    */
-  def filter(s: FunSet, p: Int => Boolean): FunSet = ???
-
+  def filter(s: FunSet, p: Int => Boolean): FunSet =
+    (x: Int) => p(x)
 
   /**
    * The bounds for `forall` and `exists` are +/- 1000.
@@ -60,6 +60,7 @@ trait FunSets extends FunSetsInterface {
    * Returns whether all bounded integers within `s` satisfy `p`.
    */
   def forall(s: FunSet, p: Int => Boolean): Boolean = {
+    @scala.annotation.tailrec
     def iter(a: Int): Boolean = {
       if (???) ???
       else if (???) ???
