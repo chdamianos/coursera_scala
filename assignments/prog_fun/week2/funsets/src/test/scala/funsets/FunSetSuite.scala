@@ -11,8 +11,9 @@ class FunSetSuite {
 
   import FunSets._
 
-  @Test def `contains is implemented`: Unit = {
-    assert(contains(x => true, 100))
+
+  @Test def `contains is implemented`(): Unit = {
+    assert(contains(_ => true, 100))
   }
 
   /**
@@ -35,9 +36,9 @@ class FunSetSuite {
    */
 
   trait TestSets {
-    val s1 = singletonSet(1)
-    val s2 = singletonSet(2)
-    val s3 = singletonSet(3)
+    val s1: _root_.funsets.FunSets.FunSet = singletonSet(1)
+    val s2: _root_.funsets.FunSets.FunSet = singletonSet(2)
+    val s3: _root_.funsets.FunSets.FunSet = singletonSet(3)
   }
 
   /**
@@ -46,10 +47,9 @@ class FunSetSuite {
    *
    * Once you finish your implementation of "singletonSet", remvoe the
    *
-   * @Ignore annotation.
-   */
+   **/
   //  @Ignore("not ready yet")
-  @Test def `singleton set one contains one`: Unit = {
+  @Test def `singleton set one contains one`(): Unit = {
 
     /**
      * We create a new instance of the "TestSets" trait, this gives us access
@@ -64,43 +64,43 @@ class FunSetSuite {
     }
   }
 
-  @Test def `union contains all elements of each set`: Unit = {
+  @Test def `union contains all elements of each set`(): Unit = {
     new TestSets {
-      val s = union(s1, s2)
+      val s: _root_.funsets.FunSets.FunSet = union(s1, s2)
       assert(contains(s, 1), "Union 1")
       assert(contains(s, 2), "Union 2")
       assert(!contains(s, 3), "Union 3")
     }
   }
 
-  @Test def `intersect contains common elements between sets`: Unit = {
+  @Test def `intersect contains common elements between sets`(): Unit = {
     new TestSets {
-      val s12 = union(s1, s2)
-      val s23 = union(s2, s3)
-      val s123 = intersect(s12, s23)
+      val s12: _root_.funsets.FunSets.FunSet = union(s1, s2)
+      val s23: _root_.funsets.FunSets.FunSet = union(s2, s3)
+      val s123: _root_.funsets.FunSets.FunSet = intersect(s12, s23)
       assert(!contains(s123, 1), "Intersect 1")
       assert(contains(s123, 2), "Intersect 2")
       assert(!contains(s123, 3), "Intersect 3")
     }
   }
 
-  @Test def `diff contains different elements between sets`: Unit = {
+  @Test def `diff contains different elements between sets`(): Unit = {
     new TestSets {
-      val s12 = union(s1, s2)
-      val s23 = union(s2, s3)
-      val s123 = diff(s12, s23)
+      val s12: _root_.funsets.FunSets.FunSet = union(s1, s2)
+      val s23: _root_.funsets.FunSets.FunSet = union(s2, s3)
+      val s123: _root_.funsets.FunSets.FunSet = diff(s12, s23)
       assert(contains(s123, 1), "Diff 1")
       assert(!contains(s123, 2), "Diff 2")
       assert(contains(s123, 3), "Diff 3")
     }
   }
 
-  @Test def `filter keeps elements satisfying condition`: Unit = {
+  @Test def `filter keeps elements satisfying condition`(): Unit = {
     new TestSets {
       def p(elem: Int): Boolean = elem!=2
-      val s12 = union(s1, s2)
-      val s123 = union(s12, s3)
-      val s123_filt = filter(s123, p)
+      val s12: _root_.funsets.FunSets.FunSet = union(s1, s2)
+      val s123: _root_.funsets.FunSets.FunSet = union(s12, s3)
+      val s123_filt: _root_.funsets.FunSets.FunSet = filter(s123, p)
       assert(contains(s123_filt, 1), "Filter 1")
       assert(!contains(s123_filt, 2), "Filter 2")
       assert(contains(s123_filt, 3), "Filter 3")
