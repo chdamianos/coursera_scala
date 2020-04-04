@@ -3,6 +3,7 @@ abstract class IntSet {
 
   def contains(x: Int): Boolean
 
+  def union(other: IntSet): IntSet
 }
 
 class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
@@ -15,8 +16,13 @@ class NonEmpty(elem: Int, left: IntSet, right: IntSet) extends IntSet {
     if (x < elem) new NonEmpty(elem, left incl x, right)
     else if (x > elem) new NonEmpty(elem, left, right incl x)
     else this
+  // termination logic:
+  // every call to union is smaller than the set we start with
+  // at some we reach zero, thus the empty set
+  override def union(other: IntSet): IntSet =
+    ((left union right) union other) incl elem
 
-  override def toString: String = "{"+ left + elem + right + "}"
+  override def toString: String = "{" + left + elem + right + "}"
 }
 
 class Empty extends IntSet {
@@ -27,9 +33,11 @@ class Empty extends IntSet {
   // with two empty subtrees
   def incl(x: Int): IntSet = new NonEmpty(x, new Empty, new Empty)
 
+
+  override def union(other: IntSet): IntSet = other
+
   override def toString: String = "."
 }
-
 
 
 val t1 = new NonEmpty(3, new Empty, new Empty)
