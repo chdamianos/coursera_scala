@@ -106,5 +106,33 @@ class FunSetSuite {
       assert(contains(s123_filt, 3), "Filter 3")
     }
   }
+
+  @Test def `forall tests if all elements satisfy condition`(): Unit = {
+    new TestSets {
+      assert(!forall(Set(1, 2, 3),{elem: Int => elem!=2}), "forall 1")
+      assert(forall(Set(1, 2, 3),{elem: Int => elem>0}), "forall 2")
+      assert(!forall(Set(-1, 2, 3),{elem: Int => elem>0}), "forall 3")
+    }
+  }
+
+  @Test def `exists tests if at least one element satisfies condition`(): Unit = {
+    new TestSets {
+      assert(exists(Set(1, 2, 3),{elem: Int => elem!=2}), "exists 1")
+      assert(!exists(Set(-1, -2, -3),{elem: Int => elem>0}), "exists 2")
+      assert(exists(Set(-1, -2, 3),{elem: Int => elem>0}), "exists 3")
+    }
+  }
+
+  @Test def `map s to another set by applying f`(): Unit = {
+    new TestSets {
+      val testSet = Set(1,2,3,4)
+      def mapFunc: Int => Int = { x:Int => x*x}
+      assert(contains(map(testSet, mapFunc),1), "map 1")
+      assert(contains(map(testSet, mapFunc),4), "map 2")
+      assert(contains(map(testSet, mapFunc),9), "map 3")
+      assert(contains(map(testSet, mapFunc),16), "map 4")
+      assert(!contains(map(testSet, mapFunc),25), "map 5")
+    }
+  }
   @Rule def individualTestTimeout = new org.junit.rules.Timeout(10 * 1000)
 }
