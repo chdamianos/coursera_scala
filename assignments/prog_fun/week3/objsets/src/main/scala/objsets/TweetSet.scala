@@ -244,14 +244,27 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+  @scala.annotation.tailrec
+  def containsKeywords(tw: Tweet, keywords: List[String]): Boolean = {
+    if (keywords.isEmpty) false else {
+      if (tw.text.contains(keywords.head)) true else containsKeywords(tw, keywords.tail)
+    }
+  }
+
+  def findTweets(allTweets: TweetSet, keywords: List[String]): TweetSet = {
+    if (keywords.isEmpty) allTweets else {
+      allTweets.filter(tw => containsKeywords(tw, keywords))
+    }
+  }
+
+  lazy val googleTweets: TweetSet = findTweets(TweetReader.allTweets, google)
+  lazy val appleTweets: TweetSet = findTweets(TweetReader.allTweets, apple)
 
   /**
    * A list of all tweets mentioning a keyword from either apple or google,
    * sorted by the number of retweets.
    */
-  lazy val trending: TweetList = ???
+  lazy val trending: TweetList = googleTweets.union(appleTweets).descendingByRetweet
 }
 
 object Main extends App {
