@@ -40,6 +40,7 @@ If a function calls itself as its last action then the function's stack frame ca
     * `acc`
         * The important argument is the accumulator (`acc`) which is initiated at `1` since this is the value of factorial when `n==0`
         * The factorial "recursion" is then established by `loop` calling itself reducing n by one 
+        * The termination condition is `if (n == 0) acc`
         * For `n=3` `loop` executes as:
             * `loop(1,3)`
                 * `if (3==0) then 1 else loop(1*3,2)`
@@ -51,3 +52,23 @@ If a function calls itself as its last action then the function's stack frame ca
                 * `if (0==0) then 1*3*2*1 else loop(1*3*2*1*0,-1)`
             * returns the answer `1*3*2*1` which is `3!`. Note the importance of starting `acc=1` so that `1*3*2*1` is the same as `3*2*1`
 The intention of tail recursion is to avoid very deep recursions and avoid stack overflow exceptions. If deep recursions are not a problem write your function as clearly as possible without worrying about tail recursion.
+# Week2
+## High-order functions
+Can take functions as arguments and can return functions
+## Currying 
+Uses high order functions and patterns in programming to write elegant programs
+### Example
+* A function that calculates the product between two numbers 
+    ```scala
+    def product(f: Int => Int)(a: Int, b: Int): Int = {
+    if (a > b) 1
+    else f(a) * product(f)(a + 1, b)
+    }
+    ```
+    * `product(x => x * x)(3, 4)`
+        * `if (3>4) 1 else 3*3*product(x => x * x)(3+1, 4)`
+    * `3*3*product(x => x * x)(3+1, 4)`
+        * `if (4>4) 1 else (3+1)*(3+1)*product(x => x * x)(3+1+1, 4)`
+    * `3*3*(3+1)*(3+1)*product(x => x * x)(3+1+1, 4)`
+        * `if (5>4) 1 else (3+1+1)*(3+1+1)*product(x => x * x)(3+1+1+1, 4)`
+    * `3*3*(3+1)*(3+1)*1=144`
