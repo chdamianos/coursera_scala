@@ -65,6 +65,8 @@ Uses high order functions and patterns in programming to write elegant programs
     else f(a) * product(f)(a + 1, b)
     }
     ```
+    * Note this is non-tail recursive
+    * The termination condition is `if (a > b) 1`
     * `product(x => x * x)(3, 4)`
         * `if (3>4) 1 else 3*3*product(x => x * x)(3+1, 4)`
     * `3*3*product(x => x * x)(3+1, 4)`
@@ -72,3 +74,41 @@ Uses high order functions and patterns in programming to write elegant programs
     * `3*3*(3+1)*(3+1)*product(x => x * x)(3+1+1, 4)`
         * `if (5>4) 1 else (3+1+1)*(3+1+1)*product(x => x * x)(3+1+1+1, 4)`
     * `3*3*(3+1)*(3+1)*1=144`
+    * Tail recursive version
+        ```scala
+        def product_tail(f: Long => Long)(a: Long, b: Long): Long = {
+        @scala.annotation.tailrec
+        def loop(f: Long => Long)(acc: Long, a: Long, b: Long): Long = {
+            if (a > b) acc
+            else loop(f)(acc * f(a), a + 1, b)
+        }
+
+        loop(f)(acc = 1, a, b)
+
+        }
+        ```
+* A more general version can be created
+    ```scala
+    def mapreduce(f: Int => Int, combine: (Int, Int) => Int, zero: Int)(a: Int, b: Int): Int =
+    if (a > b) zero
+    else combine(f(a), mapreduce(f, combine, zero)(a + 1, b))
+    ```
+    * By defining how to combine the results using `combine` we can generalize
+    * For example the product can be expressed as 
+        ```scala
+        def product2(f: Int => Int)(a: Int, b: Int): Int = mapreduce(f, (x, y) => x * y, 1)(a, b)
+        ```
+    * a tail recursive version of mapreduce
+        ```scala
+        def mapreduce_tail(f: Int => Int, combine: (Int, Int) => Int, zero: Int)(a: Int, b: Int): Int = {
+        //  if (a > b) zero
+        //  else combine(f(a), mapreduce(f, combine, zero)(a + 1, b))
+        @scala.annotation.tailrec
+        def loop(f: Int => Int, combine: (Int, Int) => Int, zero: Int)(acc: Int, a: Int, b: Int): Int = {
+            if (a > b) acc
+            else loop(f, combine, zero)(combine(acc, f(a)), a + 1, b)
+        }
+
+        loop(f, combine, zero)(acc = zero, a, b)
+        }
+        ```
