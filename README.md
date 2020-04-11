@@ -112,3 +112,75 @@ Uses high order functions and patterns in programming to write elegant programs
         loop(f, combine, zero)(acc = zero, a, b)
         }
         ```
+# Week3
+## Class hierarchies
+Abstract class can contain methods not implemented that the subclasses need to implement
+* Example for abstract class with methods that need to be implemented
+    ```scala
+    abstract class IntSet {
+    def incl(s: Int): IntSet
+
+    def contains(x: Int): Boolean
+
+    def union(other: IntSet): IntSet
+    }
+    ```
+* Any class that inherits from `IntSet` needs to implement the methods not implemented in `IntSet`
+    ```scala
+    class Empty extends IntSet {
+    def contains(x: Int): Boolean = false
+    def incl(x: Int): IntSet = new NonEmpty(x, new Empty, new Empty)
+    override def union(other: IntSet): IntSet = other
+    override def toString: String = "."
+    }
+    ```
+    * `toString` is inherited from a higher level class that all classes inherit from 
+### Override
+Class methods and definitions can be overriden 
+```scala
+abstract class Base {
+  def foo = 1
+  def bar: Int
+}
+
+class Sub extends Base {
+  override def foo: Int = 2
+  def bar = 3
+}
+```
+## Traits
+* Advantages
+    * Traits are like abstract classes but a class can inherit multiple traits
+    * Traits are like Java interfaces but they can also containt fields and concrete methods (i.e. implemented methods)
+* Disadvantages
+    * Traits cannot have values parameters, only classes can
+        * For example `numer` and `denom` 
+            ```scala
+            class Rational(x: Int, y: Int) {
+            def numer = x
+            def denom = y
+            }
+            ```
+
+## Exceptions
+Example
+```scala
+package week3
+import java.util.NoSuchElementException
+
+trait List[T] {
+  def isEmpty: Boolean
+  def head: T
+  def tail: List[T]
+}
+
+class Cons[T](val head: T, val tail: List[T]) extends List[T] {
+  def isEmpty = false
+}
+
+class Nil[T] extends List[T] {
+  def isEmpty = true
+  def head: Nothing = throw new NoSuchElementException("Nil.head")
+  def tail: Nothing = throw new NoSuchElementException("Nil.head")
+}
+```

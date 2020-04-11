@@ -119,7 +119,11 @@ class Empty extends TweetSet {
   def incl(tweet: Tweet): TweetSet = new NonEmpty(tweet, new Empty, new Empty)
 
   def remove(tweet: Tweet): TweetSet = this
-
+  /*`Unit` is analogous to `void` in Java
+  A function that doesn't return anything must have the return type Unit.
+  If it were Nothing then the function could not return a result.
+  The only way to exit the function would be by an exception
+  */
   def foreach(f: Tweet => Unit): Unit = ()
 
   /**
