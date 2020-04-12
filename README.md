@@ -1,3 +1,9 @@
+# Table of Contents  
+## [Week1](#week1)  
+## [Week2](#week2)  
+## [Week3](#week3)  
+## [Week4](#week4)  
+
 # Week1
 ## Call-by-name(CBN) and call-by-value(CBV)
 CBV has the advantage of evaluating every argument once
@@ -229,15 +235,15 @@ class Nil[T] extends List[T] {
             3. in this example the `then_part` is a `false_custom` object 
             4. so the result is correctly `false_custom` (`false_custom.toString()="FALSE"`)
     * All combination examples
-        1. if we do true_custom.&&(false_custom) the x is false_custom and the ifThenElse comes from true_custom
-        this means that the ifThenElse will return the then part which is x (i.e. false_custom)
-        2. if we do true_custom.&&(true_custom) the x is true_custom and the ifThenElse comes from true_custom
-        this means that the ifThenElse will return the then part which is x (i.e. true_custom)
-        3. if we do false_custom.&&(true_custom) the x is true_custom and the ifThenElse comes from false_custom
-        this means that the ifThenElse will return the else part which is false_custom
-        4. if we do false_custom.&&(false_custom) the x is false_custom and the ifThenElse comes from false_custom
-        this means that the ifThenElse will return the else part which is false_custom
-        * for scenarios 3, 4 it doesn't matter what x is since what will be returned is the else part
-        since false_custom is `this` and that's how its ifThenElse behaves
-        * for scenarios 1, 2 the x will always be returned (since `this` is true_custom)
-        which will result in true if x is true_custom and false if x is false_custom 
+        1. if we do `true_custom.&&(false_custom)` the `x` is `false_custom` and the `ifThenElse` comes from `true_custom`
+        this means that the `ifThenElse` will return the then part which is `x` (i.e. `false_custom`)
+        2. if we do `true_custom.&&(true_custom)` the `x` is `true_custom` and the `ifThenElse` comes from `true_custom`
+        this means that the `ifThenElse` will return the then part which is `x` (i.e. `true_custom`)
+        3. if we do `false_custom.&&(true_custom)` the `x` is `true_custom` and the `ifThenElse` comes from `false_custom`
+        this means that the `ifThenElse` will return the else part which is `false_custom`
+        4. if we do `false_custom.&&(false_custom)` the `x` is `false_custom` and the `ifThenElse` comes from `false_custom`
+        this means that the `ifThenElse` will return the else part which is `false_custom`
+        * for scenarios 3, 4 it doesn't matter what `x` is since what will be returned is the else part
+        since `false_custom` is `this` and that's how its `ifThenElse` behaves
+        * for scenarios 1, 2 the `x` will always be returned (since `this` is `true_custom`)
+        which will result in true if `x` is `true_custom` and false if `x` is `false_custom` 
