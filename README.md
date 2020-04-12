@@ -1,8 +1,8 @@
 # Table of Contents  
-## [Week1](#week1)  
-## [Week2](#week2)  
-## [Week3](#week3)  
-## [Week4](#week4)  
+[Week1](#week1)  
+[Week2](#week2)  
+[Week3](#week3)  
+[Week4](#week4)  
 
 # Week1
 ## Call-by-name(CBN) and call-by-value(CBV)
