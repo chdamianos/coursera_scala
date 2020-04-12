@@ -184,3 +184,60 @@ class Nil[T] extends List[T] {
   def tail: Nothing = throw new NoSuchElementException("Nil.head")
 }
 ```
+# Week4
+## Primitive types as objects
+* The start of this week wants to show how primitive types can actually be objects
+* Example for `Boolean` 
+    ```scala
+
+    abstract class Boolean {
+    def ifThenElse[T](then_part: => T, else_part: => T): T
+    def &&(x: => Boolean): Any = ifThenElse(x, false_custom)
+    ```
+    * the `ifThenElse` takes two arguments and will return one back, either the `then_part` or `else_part`
+    * The `and` `&&` operator is also defined
+    * OK, now let's implement the `true` and `false` booleans from the `Boolean` abstract class
+        ```scala
+        object true_custom extends Boolean {
+        override def ifThenElse[T](then_part: => T, else_part: => T : T = then_part
+        override def toString: String = "TRUE"
+        }
+
+        object false_custom extends Boolean {
+        override def ifThenElse[T](then_part: => T, else_part: => T): T = else_part
+        override def toString: String = "FALSE"
+        }
+        ```
+    * the key part is to understand the imlpementations of `ifThenElse` 
+        * for `true_custom` the `then_part` part is returned 
+            * this makes sense since when a condition if `true` we return the `then` part `if (cond) 1 else 0` returns 1 if `cond` is `true` 
+        * for `false_custom` the `else_part` part is returned 
+            * this makes sense since when a condition if `false` we return the `else` part `if (cond) 1 else 0` returns 0 if `cond` is `false` 
+    * OK, let's try it out
+        ```scala
+        object run_some_stuff {
+        def main(args: Array[String]): Unit ={
+            val t = true_custom
+            val f = false_custom
+            println(t.&&(f))
+        }
+        }
+        ```
+        * `t.&&(f)` (or equivalently `t&&f`)
+            1. the execution starts with `this` being a `true_custom` implementation of `Boolean` 
+            2. this means that `ifThenElse` will return the the `then_part` 
+            3. in this example the `then_part` is a `false_custom` object 
+            4. so the result is correctly `false_custom` (`false_custom.toString()="FALSE"`)
+    * All combination examples
+        1. if we do true_custom.&&(false_custom) the x is false_custom and the ifThenElse comes from true_custom
+        this means that the ifThenElse will return the then part which is x (i.e. false_custom)
+        2. if we do true_custom.&&(true_custom) the x is true_custom and the ifThenElse comes from true_custom
+        this means that the ifThenElse will return the then part which is x (i.e. true_custom)
+        3. if we do false_custom.&&(true_custom) the x is true_custom and the ifThenElse comes from false_custom
+        this means that the ifThenElse will return the else part which is false_custom
+        4. if we do false_custom.&&(false_custom) the x is false_custom and the ifThenElse comes from false_custom
+        this means that the ifThenElse will return the else part which is false_custom
+        * for scenarios 3, 4 it doesn't matter what x is since what will be returned is the else part
+        since false_custom is `this` and that's how its ifThenElse behaves
+        * for scenarios 1, 2 the x will always be returned (since `this` is true_custom)
+        which will result in true if x is true_custom and false if x is false_custom 
