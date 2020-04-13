@@ -1,6 +1,6 @@
 package week4
 
-abstract class Boolean {
+abstract class BooleanCustom {
 
 
   // this method can be viewed as a transformation of if (cond) t else et
@@ -21,11 +21,11 @@ abstract class Boolean {
   // since false_custom is `this` and that's how its ifThenElse behaves
   // for scenarios 1, 2 the x will always be returned (since `this` is true_custom)
   // which will result in true if x is true_custom and false if x is false_custom
-  def &&(x: => Boolean): Any = ifThenElse(x, false_custom)
+  def &&(x: => BooleanCustom): Any = ifThenElse(x, false_custom)
 
   // if the Boolean itself (x) is true then the result is immediately true (LHS argument)
   // if the Boolean itself (x) is false then x (RHS argument) is returned
-  def ||(x: => Boolean): Any = ifThenElse(true_custom, x)
+  def ||(x: => BooleanCustom): Any = ifThenElse(true_custom, x)
 
   // negation operation
   // if the Boolean itself is true we return false (LHS argument)
@@ -35,28 +35,29 @@ abstract class Boolean {
   // if the argument is true then the result is true
   // if the argument is false then the result is true
   // the result of the test `==` is the value of the argument
-  def ==(x: Boolean): Any = ifThenElse(x, x.unary_!)
+  def ==(x: BooleanCustom): Any = ifThenElse(x, x.unary_!)
 
-  def !=(x: Boolean): Any = ifThenElse(x.unary_!, x)
+  def !=(x: BooleanCustom): Any = ifThenElse(x.unary_!, x)
 
-  def <(x: Boolean): Boolean = ifThenElse(false_custom, x)
+  def <(x: BooleanCustom): BooleanCustom = ifThenElse(false_custom, x)
 
 
 }
 
-object true_custom extends Boolean {
+object true_custom extends BooleanCustom {
   override def ifThenElse[T](then_part: => T, else_part: => T): T = then_part
 
   override def toString: String = "TRUE"
 }
 
-object false_custom extends Boolean {
+object false_custom extends BooleanCustom {
   override def ifThenElse[T](then_part: => T, else_part: => T): T = else_part
+
   override def toString: String = "FALSE"
 }
 
 object run_some_stuff {
-  def main(args: Array[String]): Unit ={
+  def main(args: Array[String]): Unit = {
     val t = true_custom
     val f = false_custom
     println(t.&&(f))
