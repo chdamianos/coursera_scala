@@ -247,3 +247,116 @@ class Nil[T] extends List[T] {
         since `false_custom` is `this` and that's how its `ifThenElse` behaves
         * for scenarios 1, 2 the `x` will always be returned (since `this` is `true_custom`)
         which will result in true if `x` is `true_custom` and false if `x` is `false_custom` 
+## Subtypes and generics
+* A function can be parameterized with `<:`, an upper bound 
+* Example
+    ```scala
+    def assertAllPos[S <: IntSet](r:S) : S = ???
+    ```
+    `S` is a subtype of `IntSet`, a subtype needs to conform to `IntSet`
+* A function can also be parameterized with `>:`, an lower bound 
+    * `S >: T` means that `S` is a supertype of `T`, or `T` is a subtype of `S`
+* A function can also be parameterized with `>:` and `>:`, an interval bound 
+    * `[S >: T1 <: T2]` means that `S` is a supertype of `T1` and a subtype of `T2`
+* `covariant` means that if `S <: T` holds then also `List[S] <: List[T]` also holds
+    * In general if `S <: T` an expression of type `S` should be substitutable wherever an expression of type `T` is used
+
+## Pattern matching
+Let's say there is a `Trait` and from that `Trait` there are a few sub-classes that extend it. Pattern matching is used to define functions in the `Trait` that would recognise (i.e. pattern match) the sub-classes and return different results each time.
+* Example of `Trait` that we use to define expressions of addition
+    ```scala
+    trait Expr {
+        def isNumber: Boolean
+        def isSum: Boolean
+        def numValue: Int
+        def leftOp: Expr
+        def rightOp: Expr
+        def eval: Int
+    }
+    class Number(n: Int) extends Expr {
+        override def isNumber: Boolean = true
+        override def isSum: Boolean = false
+        override def numValue: Int = n
+        override def leftOp: Expr = throw new Error("Number.leftOp")
+        override def rightOp: Expr = throw new Error("Number.rightOp")
+        override def eval: Int = n
+        override def toString: String = n.toString
+    }
+    class Sum(e1: Expr, e2: Expr) extends Expr {
+        override def isNumber: Boolean = false
+        override def isSum: Boolean = true
+        override def numValue: Int = throw new Error("Sum.numValue")
+        override def leftOp: Expr = e1
+        override def rightOp: Expr = e2
+        override def eval: Int = e1.eval + e2.eval
+    }
+    ```
+    An example of using `Expr`
+    ```scala
+    object test_expr {
+        def main(args: Array[String]): Unit = {
+            val one = new Number(1) 
+            val two = new Number(2)
+            val sum = new Sum(one, two)
+            println(sum.eval)
+        }
+    }    
+    ```
+    This will printout `3` 
+    * Can we write the `eval` in `Expr` to save use from adding it to the subclasses?
+    Yes using pattern matching
+    We will need to make some changes to the code:
+        1. The subclasses will start with the prefix `case`
+        2. Add a new `eval` called `evalPatternMatching` to `Expr` 
+        3. Once the subclasses start with `case` we don't need `new` to instantiate them
+            ```scala
+            trait Expr {
+                def isNumber: Boolean
+                def isSum: Boolean
+                def numValue: Int
+                def leftOp: Expr
+                def rightOp: Expr
+                def eval: Int
+                def evalPatternMatching: Int = this match {
+                    case Number(n) => n
+                    case Sum(e1, e2) => e1.evalPatternMatching + e2.evalPatternMatching
+                }
+            }
+            case class Number(n: Int) extends Expr {
+                override def isNumber: Boolean = true
+                override def isSum: Boolean = false
+                override def numValue: Int = n
+                override def leftOp: Expr = throw new Error("Number.leftOp")
+                override def rightOp: Expr = throw new Error("Number.rightOp")
+                override def eval: Int = n
+                override def toString: String = n.toString
+            }
+            case class Sum(e1: Expr, e2: Expr) extends Expr {
+                override def isNumber: Boolean = false
+                override def isSum: Boolean = true
+                override def numValue: Int = throw new Error("Sum.numValue")
+                override def leftOp: Expr = e1
+                override def rightOp: Expr = e2
+                override def eval: Int = e1.eval + e2.eval
+            }
+            object test_expr {
+                def main(args: Array[String]): Unit = {
+                    val one = Number(1) 
+                    val two = Number(2)
+                    val sum = Sum(one, two)
+                    println(sum.eval)
+                    println(sum.evalPatternMatching)
+                }
+            }
+            ```
+* Patterns can be constructed from:
+    1. Constructors e.g. `Number`, `Sum`
+    2. Variables e.g. `n`, `e1`, `e2`
+    3. wildcard patterns e.g. `_`
+        * `Number(_)` in case we don't want to use/care about the arguments of `Number` 
+    4. constants e.g. `1`, `true` 
+    * Rule
+        1. Variables always start with a lowercase letter
+        2. The same variable cannot be used more than once, i.e. `Sum(x,x)` is not allowed
+        3. The names of constants begin with a capital letter
+        
