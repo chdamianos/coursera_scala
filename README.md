@@ -355,8 +355,14 @@ Let's say there is a `Trait` and from that `Trait` there are a few sub-classes t
     3. wildcard patterns e.g. `_`
         * `Number(_)` in case we don't want to use/care about the arguments of `Number` 
     4. constants e.g. `1`, `true` 
-    * Rule
+    * Rules
         1. Variables always start with a lowercase letter
         2. The same variable cannot be used more than once, i.e. `Sum(x,x)` is not allowed
         3. The names of constants begin with a capital letter
-        
+* Pattern matching (FP) vs implementing asbtract methods in sub-classes (OOP)
+    * Are you more often creating sub-classes or methods?
+        * More sub-classes => Use OOP
+            * Local changes to sub-classes
+        * More methods, class hierarchy is stable => FP
+            * Local changes to methods in `Trait`
+        * Choose the solution that results in changing the less code parts
