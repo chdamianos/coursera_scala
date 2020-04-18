@@ -366,3 +366,67 @@ Let's say there is a `Trait` and from that `Trait` there are a few sub-classes t
         * More methods, class hierarchy is stable => FP
             * Local changes to methods in `Trait`
         * Choose the solution that results in changing the less code parts
+## Lists
+* Constructing Lists 
+    * Using `List`
+        ```scala
+        val fruit: List[String] = List("apples", "oranges", "pears")
+        val diag3: List[List[Int]] = List(List(1, 0, 0), List(0, 1, 0), List(0, 0, 1))
+        val empty: List[Nothing] = List()
+        ```
+    * Using `Cons` (`::`) and `Nil`
+        ```scala
+        val fruit2 = "apples" :: ("oranges" :: ("pears" :: Nil))
+        val fruit3 = "apples" :: "oranges" :: "pears" :: Nil
+        ```
+        * operators ending in `:` are seens as method call of the right-hand operand
+            ```scala
+            val fruit4 = Nil.::("apples").::("oranges").::("pears")
+            ```
+            is equivalent to 
+            ```scala
+            val fruit4 = "apples" :: "oranges" :: "pears" :: Nil
+            ```     
+* Fundamental operations of Lists (all others are derived from them)
+    ```scala
+    fruit.head
+    fruit.tail.head
+    diag3.head
+    diag3.isEmpty
+    empty.head
+    ```
+* List patterns
+    * Lists that start with 1 and then 2
+        ```scala
+        1 :: 2 :: xs
+        ```
+    * Lists of length 1
+        ```scala
+        x :: Nil
+        ```
+    * Lists of length 1 (alternative)
+        ```scala
+        List(x)
+        ```
+    * The empty List
+        ```scala
+        List()
+    * A List than contains as only element another list that starts with 2
+        ```scala
+        List(2 :: xs)
+        ```          
+* List insert sort
+    1. Sort the tail `List(7 ,3, 9, 2)` -> `List(2, 3, 9)`
+    2. Insert the head in the right place `List(2, 3, 7, 9)`
+    ```scala
+    def isort(xs: List[Int]): List[Int] = xs match {
+        case List() => List()
+        case y :: ys => insert (y, isort(ys))
+
+    }
+    def insert(x:Int, List[Int]): List[Int] = xs match {
+        case List() = List(x)
+        case y :: ys => if (x<=y) x :: xs else y :: insert(x, ys)
+    }
+    ```
+Time complexity : O(`N^2`)
