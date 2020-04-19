@@ -430,3 +430,98 @@ Let's say there is a `Trait` and from that `Trait` there are a few sub-classes t
     }
     ```
 Time complexity : O(`N^2`)
+# Week5
+## More on Lists
+* Sublists and element access
+    * The number of elements of xs
+        ```scala
+        xs.length
+        ```
+    * The list's last element, exception if xs is empty.
+        ```scala
+        xs.last
+        ```
+    * A list consisting of all elements of xs except the last one, exception if xs is empty.
+        ```scala
+        xs.init
+        ```
+     * A list consisting of the first n elements of xs, or xs itself if it is shorter than n.
+        ```scala
+        xs take n
+        ```   
+     * The rest of the collection after taking n elements (or, written out, xs apply n).
+        ```scala
+        xs drop n
+        ```      
+     * The element of xs at index n
+        ```scala
+        xs(n)
+        ```    
+* Creating new lists
+    * The list consisting of all elements of xs followed by all elements of ys
+        ```scala
+        xs ++ ys
+        ```
+    * The list containing the elements of xs in reversed order.
+        ```scala
+        xs.reverse
+        ```
+    * The list containing the same elements as xs, except at index n where it contains x.
+        ```scala
+        xs updated (n, x)
+        ```
+* Finding elements
+    * The index of the first element in xs equal to x, or -1 if x does not appear in xs.
+        ```scala
+        xs indexOf x 
+        ```
+    * Boolean check
+        ```scala
+        xs contains x
+        ```
+## Implementation of `List` methods
+* `last`
+    ```scala
+    def last[T](xs: List[T]): T = xs match {
+        case List() => throw new Error("last of empty lists")
+        case List(x) => x
+        case y :: ys => last(ys)
+    }
+    ```
+    * complexity `O(n)`
+* `init`
+    ```scala
+    def init[T](xs: List[T]): List[T] = xs match {
+        case List() => throw new Error("init of empty lists")
+        case List(x) => List()
+        case y :: ys => y :: init(ys)
+    }
+    ```
+    * Build list from start to end with `case y :: ys => y :: init(ys)` 
+    * Last element is ommited with `case List(x) => List()`
+    * complexity `O(n)`
+* `concat`
+    ```scala
+    def concat[T](xs: List[T], ys: List[T]): List[T] = xs match {
+        case List() => ys
+        case z :: zs => z :: concat(zs, ys)
+    }
+    ```
+    * Start building from first list `xs` -> `z :: concat(zs, ys)` 
+    * When `xs` list runs out then add the second list `case List() => ys`
+    * complexity `O(n)` length of `xs`
+* `reverse`
+    ```scala
+    def reverse[T](xs: List[T]): List[T] = xs match {
+        case List() => xs
+        case y :: ys => reverse(ys) ++ List(y)
+    }
+    ```
+    * complexity `O(n^2)` 
+* `removeAt`
+    ```scala
+    def removeAt[T](n: Int, xs: List[T]): List[T] = (xs take n) ::: (xs drop n + 1)
+    }
+    ```
+
+    
