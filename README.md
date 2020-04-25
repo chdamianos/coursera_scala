@@ -678,3 +678,117 @@ Time complexity : O(`N^2`)
     msortOrdImpl(fruits2)
     msortOrdImpl(fruits2)
     ```
+## High-Order List Functions
+### `map`
+* `map` is a method of `List` that can apply transforms to `List` elements
+* For example we can use map to write 
+    ```scala
+    def scaleList(xs: List[Double], factor: Double): List[Double] = xs match {
+    case Nil => xs
+    case y :: ys => y * factor :: scaleList(ys, factor)
+    }
+    ```
+    as
+    ```scala
+    def scaleListMap(xs: List[Double], factor: Double): List[Double] = {
+    xs map (x => x * factor)
+    }
+    ```    
+### `filter`
+* `filter` is a method of `List` that can filter `List` elements
+* For example we can use filter to write 
+    ```scala
+    def posElements(xs: List[Int]): List[Int] = xs match {
+    case Nil => xs
+    case y :: ys => if (y>0) y :: posElements(ys) else posElements(ys)
+    }
+    ```
+    as
+    ```scala
+    def posElementsMap(xs: List[Int]): List[Int] =  {
+    xs filter (x => x > 0)
+    }
+    ```  
+### Other `List` methods that extract sublists based on a predicate
+* `filterNot` same as` xs filter (x => !p(x))`
+    * The list consisting of those elements of xs that do not satisfy the predicate p.
+    * example
+    ```scala
+    val nums = List(2, -4, 5, 7, 1)
+    nums filterNot (x => x > 0)
+    """
+    >>>
+    List[Int] = List(-4)
+    """
+    ```
+* `partition` same as `(xs filter p, xs filterNot p)`
+    * example
+    ```scala
+    val nums = List(2, -4, 5, 7, 1)
+    nums partition (x => x > 0)
+    """
+    >>>
+    (List[Int], List[Int]) = (List(2, 5, 7, 1),List(-4))
+    """
+    ```
+* `takeWhile` The longest prefix of list xs consisting of elements that all satisfy the predicate p
+    * example
+    ```scala
+    val nums = List(2, -4, 5, 7, 1)
+    nums takeWhile (x => x > 0)
+    """
+    >>>
+    List[Int] = List(2)
+    """
+    ```
+* `dropWhile` The remainder of the list xs after any leading elements satisfying p have been removed.
+    * example
+    ```scala
+    val nums = List(2, -4, 5, 7, 1)
+    nums dropWhile (x => x > 0)
+    """
+    >>>
+    List[Int] = List(-4, 5, 7, 1)
+    """
+    ```
+* `span` Same as `(xs takeWhile p, xs dropWhile p)` but
+computed in a single traversal of the list xs.
+    * example
+    ```scala
+    val nums = List(2, -4, 5, 7, 1)
+    nums span (x => x > 0)
+    """
+    >>>
+    (List[Int], List[Int]) = (List(2),List(-4, 5, 7, 1))
+    """
+    ```
+#### Examples
+* Pack consecutive elements of lists into sublists
+    ```scala
+    def pack[T](xs: List[T]): List[List[T]] = xs match {
+    case Nil => Nil
+    case x :: Nil => List(x) :: Nil
+    case x :: _ =>
+        val (first, rest) = xs span (y => y == x)
+        first :: pack(rest)
+    }
+    val tst = List("a", "a", "a", "b", "c", "c", "a")
+    pack(tst)
+    """
+    >>>
+    List[List[String]] = List(List(a, a, a), List(b), List(c, c), List(a))
+    """
+    ```
+* Run-length encoding of list
+    ```scala
+    def encode[T](xs: List[T]): List[(T, Int)] = xs match {
+    case Nil => Nil
+    case x :: Nil => List((x, 1))
+    case _ :: _ => pack(xs) map (x => (x.head, x.length))
+    }
+    encode(tst)
+    """
+    >>>
+    List[(String, Int)] = List((a,3), (b,1), (c,2), (a,1))
+    """
+    ```
