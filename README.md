@@ -524,5 +524,46 @@ Time complexity : O(`N^2`)
     def removeAt[T](n: Int, xs: List[T]): List[T] = (xs take n) ::: (xs drop n + 1)
     }
     ```
+## Pairs and Tuples
+* Definition 
+    ```scala
+    case class Tuple2[T1, T2](_1: +T1, _2: +T2){
+        override def toString = "(" + _1 + "," + _2 + ")"
+    }
+    ```
+* We can use pairs and tuples pattern matching to make code more efficient
+* For example use 
+    ```scala
+    val (label, value) = pair
+    ```
+    instead of 
+    ```scala
+    val label = pair._1
+    val value = pair._2
+    ```
+* Another example use 
+    ```scala
+    def mergePair(xs: List[Int], ys: List[Int]): List[Int] =
+    (xs, ys) match {
+        case (Nil, _) => ys
+        case (_, Nil) => xs
+        case (x :: xs1, y :: ys1) => if (x < y) x :: merge(xs1, ys)
+        else y :: merge(xs, ys1)
+    }
+    ```
+    instead of 
+    ```scala
+    def merge(xs: List[Int], ys: List[Int]): List[Int] =
+    xs match {
+        case Nil => ys
+        case x :: xs1 =>
+        ys match {
+            case Nil => xs
+            case y :: ys1 =>
+            if (x < y) x :: merge(xs1, ys)
+            else y :: merge(xs, ys1)
+        }
 
+    }
+    ```    
     
