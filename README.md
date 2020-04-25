@@ -792,3 +792,55 @@ computed in a single traversal of the list xs.
     List[(String, Int)] = List((a,3), (b,1), (c,2), (a,1))
     """
     ```
+## List reduce methods
+### `reduceLeft`
+* Inserts a given binary operator between adjacent elements of a list
+    ```scala
+    def sum(xs: List[Int]) = (0 :: xs) reduceLeft (_ + _ )
+    def product(xs: List[Int]) = (1 :: xs) reduceLeft (_ * _ )
+    ```
+### `foldLeft`
+* Like `reduceLeft` but takes an accumulator `z` as an additional parameter which is returned then when `foldLeft` is called on an empty list
+    ```scala
+    def sumFold(xs: List[Int]) = (xs foldLeft 0) (_ + _)
+    def productFold(xs: List[Int]) = (xs foldLeft 1) (_ * _)
+    ```
+### Implementation of `foldLeft` and `reduceLeft`
+```scala
+abstract class List[T] {...
+    def reduceLeft(op: (T, T) => T): T = this match {
+        case Nil => throw new Error("Nil.reduceleft")
+        case x :: xs >> (xs reduceLeft x)(op)
+    }
+
+    def foldLeft[U](z: U)(op: (U, T) => U): U = this match {
+        case Nil => z
+        case x :: xs -> (xs foldLeft op(z, x))(op)
+    }
+}
+```
+### Implementation of `foldRight` and `reduceRight`
+* Same as `foldLeft` and `reduceLeft` when the `op` is associative and commutative 
+```scala
+abstract class List[T] {...
+  def reduceRight(op: (T, T) => T): T = this match {
+    case Nil => throw new Error("Nil.reduceleft")
+    case x :: Nil => x
+    case x :: xs >> op(x, xs reduceRight op)
+  }
+
+  def foldRight[U](z: U)(op: (U, T) => U): U = this match {
+    case Nil => z
+    case x :: xs -> op(x, (xs foldRight z)(op))
+  }
+}
+```
+* Example of `foldRight` working and `foldLeft` not working 
+    ```scala
+    // this works
+    def concatRight[T](xs: List[T], ys: List[T]): List[T] =
+    (xs foldRight ys) (_ :: _)
+    // type error
+    def concatLeft[T](xs: List[T], ys: List[T]): List[T] =
+    (xs foldLeft ys) (_ :: _)
+    ```
