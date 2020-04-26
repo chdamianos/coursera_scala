@@ -844,3 +844,69 @@ abstract class List[T] {...
     def concatLeft[T](xs: List[T], ys: List[T]): List[T] =
     (xs foldLeft ys) (_ :: _)
     ```
+## Induction methods
+### Laws of `concat`
+We would like to prove that concat:
+* is associative
+    * `(xs ++ ys) ++ zs = xs ++ (ys ++ zs)` 
+* admits empty list as neutral element to the right
+    * `xs ++ Nil = xs` 
+* admits empty list as neutral element to the left
+    * `Nil ++ xs = xs` 
+### Structural induction
+To prove a property for all lists `xs` 
+* show that a property (`P`) `P(Nil)` holds -> **Base case**
+* for a list `xs` and some element `x`, show the **induction step**:
+    * if `P(xs)` holds then `P(x :: xs)` also holds
+#### `concat` example
+* definition
+    ```scala
+    def concat[T](xs: List[T], ys: List[T]): List[T] = xs match {
+        case List() => ys
+        case x :: xs1 => x :: concat(xs1, ys)
+    }
+    ```
+    From this definition we have two `defining clauses` of ++: 
+    ```scala
+    // from `case List() => ys`
+    Nil ++ ys = ys 
+    // from `case x :: xs1 => x :: concat(xs1, ys)`
+    (x :: xs1) ++ ys = x :: (xs1 ++ ys) 
+    ```
+* Structural induction 
+    * Show `(xs ++ ys) ++ zs = xs ++ (ys ++ zs)`
+    * **Base case**: `Nil`
+        * LHS -> `(Nil ++ ys) ++ zs`
+             * From 1st defining clause
+             * `ys ++ zs`
+        * RHS -> `Nil ++ (ys ++ zs)`
+             * From 1st defining clause
+             * `ys ++ zs`
+        * LHS = RHS so the property holds for the **base case**
+    * **Induction step**: `x :: xs`
+        * LHS -> `((x :: xs) ++ ys) ++ zs`
+             * From 2nd defining clause
+             * `(x :: (xs ++ ys)) ++ zs`
+             * `x :: ((xs ++ ys) ++ zs)`
+             * Induction hypothesis assume hypothesis is already proven for `xs` ("if `P(xs)` holds then `P(x :: xs)` also holds")
+             * `x :: (xs ++ (ys ++ zs))`
+        * RHS -> `(x :: xs) ++ (ys ++ zs)`
+             * From 2nd defining clause
+             * `x :: (xs ++ (ys ++ zs))`
+        * LHS = RHS so the property holds for the **induction step** => **Property proven**
+* Structural induction 
+    * Show `xs ++ Nil = xs`
+    * **Base case**: `Nil`
+        * LHS -> `Nil ++ Nil`
+             * From 1st defining clause
+             * `Nil`
+        * RHS -> `Nil`
+        * LHS = RHS so the property holds for the **base case**
+    * **Induction step**: `x :: xs`
+        * LHS -> `(x :: xs) ++ Nil`
+             * From 2nd defining clause
+             * `x :: (xs ++ Nil)`
+             * Induction hypothesis assume hypothesis is already proven for `xs` ("if `P(xs)` holds then `P(x :: xs)` also holds")
+             * `x :: xs`
+        * RHS -> `x :: xs`
+        * LHS = RHS so the property holds for the **induction step** => **Property proven**
