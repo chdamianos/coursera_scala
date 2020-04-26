@@ -1,9 +1,46 @@
 # Table of Contents  
 [Week1](#week1)  
-[Week2](#week2)  
+* [Call-by-name(CBN) and call-by-value(CBV)](#Call-by-name(CBN)-and-call-by-value(CBV))  
+* [Recursion](#Recursion) 
+* [Tail Recursion](#Tail-Recursion) 
+
+[Week2](#week2) 
+* [High-order functions](#High-order-functions)  
+* [Currying](#Currying) 
+    * [Example](#Example) 
+
 [Week3](#week3)  
-[Week4](#week4)  
-[Week5](#week5)  
+* [Class hierarchies](#Class-hierarchies)  
+    * [Override](#Override) 
+* [Traits](#Traits) 
+* [Exceptions](#Exceptions)
+
+[Week4](#week4) 
+* [Primitive types as objects](#Primitive-types-as-objects)  
+* [Subtypes and generics](#Subtypes-and-generics) 
+* [Pattern matching](#Pattern-matching)
+* [Lists](#Lists)
+
+[Week5](#week5) 
+* [More on Lists](#More-on-Lists)  
+* [Implementation of `List` methods](#Implementation-of-`List`-methods) 
+* [Pairs and Tuples ](#Pairs-and-Tuples )
+* [Parameterization](#Parameterization)
+* [High-Order List Functions](#High-Order-List-Functions)
+    * [`map`](#`map`)
+    * [`filter`](#`filter`)
+    * [Other `List` methods that extract sublists based on a predicate](#Other-`List`-methods-that-extract-sublists-based-on-a-predicate)
+    * [`Examples`](#Examples)
+* [List reduce methods](#List-reduce-methods)
+    * [`reduceLeft`](#`reduceLeft`)
+    * [`foldLeft`](#`foldLeft`)
+    * [Implementation of `foldLeft` and `reduceLeft`](#Implementation-of-`foldLeft`-and-`reduceLeft`)
+    * [Implementation of `foldRight` and `reduceRight`](#Implementation-of-`foldRight`-and-`reduceRight`)
+* [Induction methods](#Induction-methods)
+    * [Laws of `concat`](#Laws-of-`concat`)
+    * [Structural induction](#Structural-induction)    
+        * [`concat` example](#`concat`-example)
+
 
 # Week1
 ## Call-by-name(CBN) and call-by-value(CBV)
@@ -894,7 +931,6 @@ To prove a property for all lists `xs`
              * From 2nd defining clause
              * `x :: (xs ++ (ys ++ zs))`
         * LHS = RHS so the property holds for the **induction step** => **Property proven**
-* Structural induction 
     * Show `xs ++ Nil = xs`
     * **Base case**: `Nil`
         * LHS -> `Nil ++ Nil`
