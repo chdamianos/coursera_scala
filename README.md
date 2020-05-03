@@ -40,6 +40,22 @@
     * [Laws of `concat`](#Laws-of-`concat`)
     * [Structural induction](#Structural-induction)    
         * [`concat` example](#`concat`-example)
+[Week6](#week6) 
+* [Other Collections](#Other-Collections)  
+    * [Hierarchy](#Hierarchy)  
+    * [Vector](#Vector) 
+    * [Arrays and Strings](#Arrays-and-Strings)    
+    * [Ranges](#Ranges) 
+    * [Seq operations](#Seq-operations)    
+        * [exists](#exists)    
+        * [forall](#forall)        
+        * [zip](#zip)        
+        * [unzip](#unzip)        
+        * [flatMap](#flatMap)        
+        * [sum](#sum)        
+        * [product](#product) 
+        * [max](#max)  
+        * [min](#min)                     
 
 
 # Week1
@@ -946,3 +962,115 @@ To prove a property for all lists `xs`
              * `x :: xs`
         * RHS -> `x :: xs`
         * LHS = RHS so the property holds for the **induction step** => **Property proven**
+# Week 6
+## Other Collections
+### Hierarchy
+* Iterable
+    * Seq
+        * Vector
+        * List
+        * Array (Java)
+        * String (Java)
+    * Set
+    * Map
+### Vector
+* More evenly access patterns than List
+* Access patterns 
+    * `x +: xs` or `xs :+ x`
+        ```scala
+        val nums = Vector(1, 2, 3, -88)
+        def addElementFront(xs: Vector[Int], elem: Int): Vector[Int] =
+        elem +: xs
+        def addElementBack(xs: Vector[Int], elem: Int): Vector[Int] =
+        xs :+ elem
+        addElementFront(nums, 2)
+        addElementBack(nums, 2)
+        ```
+    * If the pattern access used fit more `headElem :: tail` or `head :: tailElem` use `List` not `Vector`
+### Arrays and Strings
+* Arrays and Lists are also part of `Iterable`
+    ```scala
+    val xs = Array(1, 2, 3, 44)
+    xs map (x => x * 2)
+    val s = "Hello World"
+    s filter (c => c.isUpper)
+    ```
+### Ranges
+* `to`
+    * inclusive
+* `until`
+    * exclusive
+* `by`
+    * Step value
+```scala
+val r: Range = 1 until 5 // 1,2,3,4
+val t: Range = 1 to 5 // 1,2,3,4,5
+1 to 10 by 3 // 1,4,7,10
+6 to 1 by -2 // 6,4,2
+```
+### Seq operations
+#### exists
+* `xs exists p`
+* true if there is an element x of xs such that p(x) holds,
+false otherwise
+* examples
+    ```scala
+    val s1 = "Hello World"
+    s1 exists (c => c.isUpper)
+    >>>
+    Boolean = true
+    ```
+#### forall
+* `xs forall p`
+* true if p(x) holds for all elements x of xs, false otherwise.
+* examples
+    ```scala
+    val s1 = "Hello World"
+    s1 forall (c => c.isUpper)
+    >>>
+    Boolean = false
+    ```    
+#### zip
+* `xs zip ys`
+* A sequence of pairs drawn from corresponding elements
+of sequences xs and ys.
+* examples
+    ```scala
+    val s1 = "Hello World"
+    val pairs = List(1,2,3) zip s1
+    >>>
+    List[(Int, Char)] = List((1,H), (2,e), (3,l))
+    ```   
+#### unzip
+* `xs.unzip`
+* Splits a sequence of pairs xs into two sequences consisting of the first, respectively second halves of all pairs.
+* examples
+    ```scala
+    val s1 = "Hello World"
+    val pairs = List(1,2,3) zip s1
+    pairs.unzip
+    >>>
+    (List[Int], List[Char]) = (List(1, 2, 3),List(H, e, l))
+    ```   
+#### flatMap
+* `xs.flatMap f`
+* Applies collection-valued function f to all elements of xs and concatenates the results
+* examples
+    ```scala
+    val s1 = "Hello World"
+    s1 flatMap (c => List('.', c))
+    >>>
+    IndexedSeq[Char] = Vector(., H, ., e, ., l, ., l, ., o, .,  , ., W, ., o, ., r, ., l, ., d)
+    ```  
+#### sum
+* `xs.sum`
+* The sum of all elements of this numeric collection.
+#### product
+* `xs.product`
+* The product of all elements of this numeric collection
+#### max
+* `xs.max`
+* The maximum of all elements of this collection (an Ordering must exist)
+#### min
+* `xs.min`
+* The minimum of all elements of this collection
