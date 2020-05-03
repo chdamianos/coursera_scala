@@ -55,7 +55,13 @@
         * [sum](#sum)        
         * [product](#product) 
         * [max](#max)  
-        * [min](#min)                     
+        * [min](#min)    
+* [Combinatronial Search and For-Expressions](#Combinatronial-Search-and-For-Expressions)  
+    * [Example - prime sum of pairs](#Example---prime-sum-of-pairs)        
+    * [For-Expressions](#For-Expressions)
+* [Sets](#Sets)  
+    * [N-Queens example (Combinatronial search and Sets)](#N-Queens-example-(Combinatronial-search-and-Sets)    )    
+                 
 
 
 # Week1
@@ -1075,7 +1081,7 @@ of sequences xs and ys.
 * `xs.min`
 * The minimum of all elements of this collection
 ## Combinatronial Search and For-Expressions
-### Example
+### Example - prime sum of pairs
 * Given a positive integer n, find all pairs of positive integers i and j with 1 <= j < i < n such that i+j is prime
 * Steps:
     1. Generate the sequence of all pairs of integers (i, j) such that `1 <= j < i < n`
@@ -1112,31 +1118,97 @@ of sequences xs and ys.
                 (1 until i) map (j => (i, j))) filter (pair =>
                 isPrime(pair._1 + pair._2))
             ```
-* For-Expressions 
-    * example
+### For-Expressions 
+* example
+    ```scala
+    case class Person(name: String, age: Int)
+    for ( p <- persons if p.age > 20 ) yield p.name
+    // equivalent to 
+    persons filter (p => p.age > 20) map (p => p.name)
+    ```
+* syntax
+    * A for-expression is of the form `for ( s ) yield e` where `s` is a sequence of **generators** and **filters**, and `e` is an expression whose value is returned by an iteration. 
+        * A **generator** is of the form `p <- e`, where `p` is a pattern and `e` an expression whose value is a collection.
+        * A **filter** is of the form if f where f is a boolean expression.
+        * The sequence must start with a generator.
+        * If there are several generators in the sequence, the last generators vary faster than the first.
+* Instead of `( s )`, braces `{ s }` can also be used, and then the sequence of generators and filters can be written on multiple lines without requiring semicolons.
+* `isPrime` example
+    ```scala
+    for {
+        i <- 1 until n
+        j <- 1 until i
+        if isPrime(i + j)
+    } yield (i, j)
+    ```
+* `scalarProduct` example
+    ```scala
+    def scalaProduct(xs: List[Double], ys: List[Double]): Double =
+        (for ((x, y) <- xs zip ys) yield x * y).sum
+    ```
+## Sets
+* Most operations available on `Seq` are also available to `Set`
+    ```scala
+    val fruit = Set("apple", "banana", "pear")
+    val s = (1 to 6).toSet
+    s map (_ + 2)
+    fruit filter (_.startsWith("app"))
+    ```
+* Differences between `Seq` and `Set`
+    1. Sets are unordered
+    2. Sets do not have duplicate elements
         ```scala
-        case class Person(name: String, age: Int)
-        for ( p <- persons if p.age > 20 ) yield p.name
-        // equivalent to 
-        persons filter (p => p.age > 20) map (p => p.name)
-        ```
-    * syntax
-        * A for-expression is of the form `for ( s ) yield e` where `s` is a sequence of **generators** and **filters**, and `e` is an expression whose value is returned by an iteration. 
-            * A **generator** is of the form `p <- e`, where `p` is a pattern and `e` an expression whose value is a collection.
-            * A **filter** is of the form if f where f is a boolean expression.
-            * The sequence must start with a generator.
-            * If there are several generators in the sequence, the last generators vary faster than the first.
-    * Instead of `( s )`, braces `{ s }` can also be used, and then the sequence of generators and filters can be written on multiple lines without requiring semicolons.
-    * `isPrime` example
+        val s = (1 to 6).toSet
+        s map (_ / 2)
+        >>>
+        HashSet(0, 1, 2, 3)
+        ```  
+    3. Fundamental operation of `Set` is `contains`
         ```scala
+        val s = (1 to 6).toSet
+        s contains 5
+        >>>
+        Boolean = true
+        ```      
+### N-Queens example (Combinatronial search and Sets)
+* The problem is to place queens on a chessboard so that no queen is threatened by another
+* One way so to place a queen on each row
+* Once we placed k-1 queens we must place the k-th queen in a column where it's not "in check" with another queen on the board
+* Algorithm
+    * Suppose that we have already generated all the solutions consisting of placing k-1 queens on a board of size n.
+    * Each solution is represented by a list (of length k-1)containing the numbers of columns (between 0 and n-1).
+    * The column number of the queen in the k-1th row comes first in the list, followed by the column number of the queen in row k-2, etc.
+    * The solution set is thus represented as a set of lists, with one element for each solution.
+    * Now, to place the kth queen, we generate all possible extensions of each solution preceded by a new queen:
+* Code
+    ```scala
+    def isSafe(col: Int, queens: List[Int]): Boolean = {
+    val row = queens.length
+    val queensWithRow = (row - 1 to 0 by -1) zip queens
+    queensWithRow forall {
+        case (r, c) => col != c && math.abs(col - c) != row - r
+    }
+    }
+
+    def queens(n: Int): Set[List[Int]] = {
+    def placeQueens(k: Int): Set[List[Int]] =
+        if (k == 0) Set(List())
+        else
         for {
-            i <- 1 until n
-            j <- 1 until i
-            if isPrime(i + j)
-        } yield (i, j)
-        ```
-    * `scalarProduct` example
-        ```scala
-        def scalaProduct(xs: List[Double], ys: List[Double]): Double =
-            (for ((x, y) <- xs zip ys) yield x * y).sum
-        ```
+            queens <- placeQueens(k - 1)
+            col <- 0 until n
+            if isSafe(col, queens)
+        } yield col :: queens
+
+    placeQueens(n)
+    }
+
+    def show(queens: List[Int]): String = {
+    val lines =
+        for (col <- queens.reverse)
+        yield Vector.fill(queens.length)("* ").updated(col, "X ").mkString
+    "\n" + (lines mkString "\n")
+    }
+
+    (queens(8) take 3 map show) mkString "\n============\n"
+    ```
