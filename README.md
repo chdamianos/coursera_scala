@@ -1074,3 +1074,69 @@ of sequences xs and ys.
 #### min
 * `xs.min`
 * The minimum of all elements of this collection
+## Combinatronial Search and For-Expressions
+### Example
+* Given a positive integer n, find all pairs of positive integers i and j with 1 <= j < i < n such that i+j is prime
+* Steps:
+    1. Generate the sequence of all pairs of integers (i, j) such that `1 <= j < i < n`
+    2. Filter pairs for which `i + j` is prime
+    * Step 1
+        * Generate all the integers i between 1 and n (excluded)
+        * For each integer i generate the list of pairs `(i ,1),..., (i, i-1)`
+        ```scala
+        val n =7
+        (1 until n) map (i =>
+        (1 until i) map (j => (i, j)))
+        >>>
+        IndexedSeq[IndexedSeq[(Int, Int)]] = Vector(Vector(), Vector((2,1)), Vector((3,1), (3,2)), Vector((4,1), (4,2), (4,3)), Vector((5,1), (5,2), (5,3), (5,4)), Vector((6,1), (6,2), (6,3), (6,4), (6,5)))
+        ```
+        * A `Seq` of pairs cannot be of type `Range` so the type inference mechanism search for the next level up for `Seq` and found `Vector` to be the next beest representation. 
+        * **But we want a collection of pairs not a collection of `Vector`**
+        * We can use `xss foldRight Seq[Int]()) (_ ++ _)` or the equivalent built-in method `xss.flatten`
+            ```scala
+            ((1 until n) map (i =>
+              (1 until i) map (j => (i, j)))).flatten
+            >>>
+            IndexedSeq[(Int, Int)] = Vector((2,1), (3,1), (3,2), (4,1), (4,2), (4,3), (5,1), (5,2), (5,3), (5,4), (6,1), (6,2), (6,3), (6,4), (6,5))
+            ```
+        * We can use `flatMap` based on `xs flatMap f = (xs map).flatten`
+        ```scala
+        (1 until n).flatMap(i =>
+            (1 until i) map (j => (i, j)))
+        ```
+    * Step 2 
+        * define filter function
+            ```scala
+            def isPrime(n: Int) = (2 until n) forall (n % _ != 0)
+            (1 until n).flatMap(i =>
+                (1 until i) map (j => (i, j))) filter (pair =>
+                isPrime(pair._1 + pair._2))
+            ```
+* For-Expressions 
+    * example
+        ```scala
+        case class Person(name: String, age: Int)
+        for ( p <- persons if p.age > 20 ) yield p.name
+        // equivalent to 
+        persons filter (p => p.age > 20) map (p => p.name)
+        ```
+    * syntax
+        * A for-expression is of the form `for ( s ) yield e` where `s` is a sequence of **generators** and **filters**, and `e` is an expression whose value is returned by an iteration. 
+            * A **generator** is of the form `p <- e`, where `p` is a pattern and `e` an expression whose value is a collection.
+            * A **filter** is of the form if f where f is a boolean expression.
+            * The sequence must start with a generator.
+            * If there are several generators in the sequence, the last generators vary faster than the first.
+    * Instead of `( s )`, braces `{ s }` can also be used, and then the sequence of generators and filters can be written on multiple lines without requiring semicolons.
+    * `isPrime` example
+        ```scala
+        for {
+            i <- 1 until n
+            j <- 1 until i
+            if isPrime(i + j)
+        } yield (i, j)
+        ```
+    * `scalarProduct` example
+        ```scala
+        def scalaProduct(xs: List[Double], ys: List[Double]): Double =
+            (for ((x, y) <- xs zip ys) yield x * y).sum
+        ```
