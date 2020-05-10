@@ -77,6 +77,7 @@
         * [Using bindings](#Using-bindings)
         * [Using foldLeft](#Using-foldLeft)
         * [Efficiency](#Efficiency)
+* [Phone key mnemonics example](#Phone-key-mnemonics-example)
 
 # Week1
 ## Call-by-name(CBN) and call-by-value(CBV)
