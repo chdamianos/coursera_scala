@@ -1483,3 +1483,64 @@ Poly = 3.0x^0+2.0x^1+11.0x^3+6.2x^5"
 ```
 #### Efficiency
 The `foldLeft` implementation is more efficient because it doesn't create the additional `(other.terms map adjustCourse)` structure before concatenation `terms ++ (other.terms map adjustCourse)`
+## Phone key mnemonics example
+* The phone keypad is a map of a number character to a string 
+    ```scala
+    val mnem = Map('2' -> "ABC", '3' -> "DEF", '4' -> "GHI", '5' -> "JKL",
+    '6' -> "MNO", '7' -> "PQRS", '8' -> "TUV", '9' -> "WXYZ")
+    ```
+* We want a method `translate` what will take a phone number and will return all phrases of words that can map to the phone number
+    * For example the number `7225247386` should have the phrase `"Scala is fun"` as one of its memonics, since S is in 7 (`'7'->"PQRS"`) , c is in 2, etc...
+* Algorithm 
+    1. Convert character to number
+        * we want to be able to map a character to a number 
+        *  e.g. `'2' -> "ABC"` => `'A'->'2', 'B'->2, 'C'->2`
+        ```scala
+        val charCode: Map[Char, Char] = (for ((k, v) <- mnem; ltr <- v) yield ltr -> k).withDefaultValue(" ".charAt(0))
+        ">>>
+        charCode: Map[Char,Char] = Map(N -> 6, T -> 8, U -> 8, F -> 3, A -> 2 ..."
+        ```
+        * we need a default value in case character cannot be mapped `.withDefaultValue(" ".charAt(0))`
+    
+    2. Convert word to a string of digits it can be represented
+        ```scala
+        def wordCode(word: String): String = {
+        word.toUpperCase map charCode
+        }
+        wordCode("Java")
+        ">>>
+        String = 5282"
+        ```
+    3. Map of a digits string to the many words it can represent (e.g. `"5252" -> List("Java", "Kata", ...)`)
+        ```scala
+        // import words as a list
+        val linuxwords = getClass.getResource("/linuxwords.txt").getPath
+        val in = Source.fromFile(linuxwords, "UTF-8")
+        val words = in.mkString.split("\\s+").toList
+        val wordsForNum: Map[String, Seq[String]] = 
+            words groupBy wordCode withDefaultValue Seq()
+        ```
+    4. Create every combination of strings for every number in phone number digits
+        ```scala
+        def encode(number: String): Set[List[String]] =
+        if (number.isEmpty) Set(List())
+        else {
+            for {
+            split <- 1 to number.length
+            word <- wordsForNum(number take split)
+            rest <- encode(number drop split)
+            } yield word :: rest
+        }.toSet 
+        encode("7225247386")  
+        ">>>
+        Set[List[String]] = HashSet(List(rack, ah, re, to), List(sack, ah, re, to), List(Scala,..."
+        ```
+    5. Stitch words to phrases
+    ```scala
+    def translate(number: String): Set[String] =
+        encode(number) map (_ mkString " ")
+    translate("7225247386")
+    ">>>
+    Set[String] = HashSet(pack bird to, Scala ire to, Scala is fun,...
+    "
+    ```
