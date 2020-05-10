@@ -40,6 +40,7 @@
     * [Laws of `concat`](#Laws-of-`concat`)
     * [Structural induction](#Structural-induction)    
         * [`concat` example](#`concat`-example)
+
 [Week6](#week6) 
 * [Other Collections](#Other-Collections)  
     * [Hierarchy](#Hierarchy)  
@@ -61,8 +62,21 @@
     * [For-Expressions](#For-Expressions)
 * [Sets](#Sets)  
     * [N-Queens example (Combinatronial search and Sets)](#N-Queens-example-(Combinatronial-search-and-Sets)    )    
-                 
-
+* [Maps](#Maps)                  
+    * [Accessing values](#Accessing-values)
+        * [Direct access](#Direct-access)
+        * [Using get](#Using-get)
+        * [Using pattern matching](#Using-pattern-matching)
+    * [Sorted and GroupBy](#Sorted-and-GroupBy)
+        * [sortWith](#sortWith)
+        * [groupBy](#groupBy)
+        * [transform](#transform)
+    * [Class Poly example](#Class-Poly-example)
+        * [Basic example](#Basic-example)
+        * [Using withDefaultValue example](#Using-withDefaultValue-example)
+        * [Using bindings](#Using-bindings)
+        * [Using foldLeft](#Using-foldLeft)
+        * [Efficiency](#Efficiency)
 
 # Week1
 ## Call-by-name(CBN) and call-by-value(CBV)
@@ -1212,3 +1226,260 @@ of sequences xs and ys.
 
     (queens(8) take 3 map show) mkString "\n============\n"
     ```
+## Maps
+* `Map[Key, Value]` extends `Iterable[(Key, Value)]`
+* Therefore `Map` supports the same collection operations as iterables do
+    ```scala
+    val capitalofCountry = Map("US" -> "Washington", "Switzerland" -> "Bern")
+    ">>>
+    scala.collection.immutable.Map[String,String] = Map(US -> Washington, Switzerland -> Bern)"
+    val countryOfCapital = capitalofCountry map {
+    case(x,y) => (y,x)
+    }
+    ">>>
+    scala.collection.immutable.Map[String,String] = Map(Washington -> US, Bern -> Switzerland)
+    "
+    ```
+### Accessing values
+#### Direct access
+    ```scala
+    capitalofCountry("US")
+    ">>>
+    String = Washington
+    "
+    capitalofCountry("Andorra")
+    ">>>
+    java.util.NoSuchElementException: key not found: Andorra
+    "
+    ```
+#### Using get
+    * Use if you don't know an element exist
+    ```scala
+    capitalofCountry get "Andorra"
+    ">>>
+    Option[String] = None
+    "
+    capitalofCountry get "US"
+    ">>>
+    Option[String] = Some(Washington)
+    "
+    ``` 
+#### Using pattern matching
+```scala
+def showCapital(country: String) = capitalofCountry.get(country) match {
+case Some(x) => x
+case None => "missing data"
+}
+showCapital("US")
+">>>
+String = Washington
+"
+showCapital("Andorra")
+">>>
+String = missing data
+"
+```
+### Sorted and GroupBy
+#### sortWith
+```scala
+capitalofCountry.values.toVector.sortWith(_.length < _.length)
+">>>
+scala.collection.immutable.Vector[String] = Vector(Bern, Washington)
+"
+capitalofCountry.keys.toVector.sortWith(_.length < _.length)
+">>>
+scala.collection.immutable.Vector[String] = Vector(US, Switzerland)
+"
+capitalofCountry.toSeq.sortWith(_._1 > _._1).toMap
+">>>
+scala.collection.immutable.Map[String,String] = Map(US -> Washington, Switzerland -> Bern)
+"
+```
+#### groupBy
+* `List` to `Map`
+```scala
+val fruit = List("apple", "pear", "orange", "pineapple")
+fruit groupBy (_.head)
+">>>
+scala.collection.immutable.Map[Char,List[String]] = HashMap(a -> List(apple), p -> List(pear, pineapple), o -> List(orange))
+"
+```
+#### transform
+* apply function to `Map` keys
+```scala
+capitalofCountry transform((_,v)=>v+" modified city")
+">>>
+scala.collection.immutable.Map[String,String] = Map(US -> Washington modified city, Switzerland -> Bern modified city)
+"
+```
+### Class Poly example
+#### Basic example
+```scala
+class Poly(val terms: Map[Int, Double]) {
+  /*Note two different was to add this to other
+  * `adjust` was an exercise
+  * `adjustCourse` is what was presented in the course
+  * */
+  def +(other: Poly) = new Poly(terms ++ (other.terms map adjust))
+  /*this is wrong because if terms and other.terms have the same key
+  * the value in other.terms will shadow the terms value*/
+  def addWrong(other: Poly) = new Poly(terms ++ other.terms)
+
+  def addCourse(other: Poly) = new Poly(terms ++ (other.terms map adjustCourse))
+
+  def adjust(term: (Int, Double)): (Int, Double) = {
+    if (terms.keySet.contains(term._1)) (term._1, term._2 + terms(term._1))
+    else (term._1, term._2)
+  }
+
+  def adjustCourse(term: (Int, Double)): (Int, Double) = {
+    val (exp, coeff) = term
+    terms get exp match {
+      case Some(coeff1) => exp -> (coeff + coeff1)
+      case None => exp -> coeff
+    }
+  }
+
+
+  override def toString: String = {
+    (for ((exp, coeff) <- terms.toList.sortWith(_._1 < _._1)) yield coeff + "x^" + exp) mkString "+"
+  }
+}
+
+val p1 = new Poly(Map(1 -> 2.0, 3 -> 4.0, 5 -> 6.2))
+">>>
+Poly = 2.0x^1+4.0x^3+6.2x^5"
+val p2 = new Poly(Map(0 -> 3.0, 3 -> 7.0))
+">>>
+Poly = 3.0x^0+7.0x^3"
+p1 addWrong p2
+">>>
+Poly = 3.0x^0+2.0x^1+7.0x^3+6.2x^5"
+p1 addCourse p2
+">>>
+Poly = 3.0x^0+2.0x^1+11.0x^3+6.2x^5"
+p1 + p2
+">>>
+Poly = 3.0x^0+2.0x^1+11.0x^3+6.2x^5"
+```
+#### Using withDefaultValue example
+* Simplifies the `adjustCourse` 
+```scala
+class Poly(val _terms: Map[Int, Double]) {
+  val terms = _terms withDefaultValue 0.0
+
+  /*Note two different was to add this to other
+  * `adjust` was an exercise
+  * `adjustCourse` is what was presented in the course
+  * */
+  def +(other: Poly) = new Poly(terms ++ (other.terms map adjust))
+
+  /*this is wrong because if terms and other.terms have the same key
+  * the value in other.terms will shadow the terms value*/
+  def addWrong(other: Poly) = new Poly(terms ++ other.terms)
+
+  def addCourse(other: Poly) = new Poly(terms ++ (other.terms map adjustCourse))
+
+  def adjust(term: (Int, Double)): (Int, Double) = {
+    if (terms.keySet.contains(term._1)) (term._1, term._2 + terms(term._1))
+    else (term._1, term._2)
+  }
+
+  def adjustCourse(term: (Int, Double)): (Int, Double) = {
+    val (exp, coeff) = term
+    exp -> (coeff + terms(exp))
+  }
+
+
+  override def toString: String = {
+    (for ((exp, coeff) <- terms.toList.sortWith(_._1 < _._1)) yield coeff + "x^" + exp) mkString "+"
+  }
+}
+```
+#### Using bindings
+* Simplifies `Map` arguments
+```scala
+class Poly(val _terms: Map[Int, Double]) {
+  def this(bindings: (Int, Double)*) = this(bindings.toMap)
+  val terms = _terms withDefaultValue 0.0
+  /*Note two different was to add this to other
+  * `adjust` was an exercise
+  * `adjustCourse` is what was presented in the course
+  * */
+  def +(other: Poly) = new Poly(terms ++ (other.terms map adjust))
+
+  /*this is wrong because if terms and other.terms have the same key
+  * the value in other.terms will shadow the terms value*/
+  def addWrong(other: Poly) = new Poly(terms ++ other.terms)
+
+  def addCourse(other: Poly) = new Poly(terms ++ (other.terms map adjustCourse))
+
+  def adjust(term: (Int, Double)): (Int, Double) = {
+    if (terms.keySet.contains(term._1)) (term._1, term._2 + terms(term._1))
+    else (term._1, term._2)
+  }
+
+  def adjustCourse(term: (Int, Double)): (Int, Double) = {
+    val (exp, coeff) = term
+    exp -> (coeff + terms(exp))
+  }
+
+
+  override def toString: String = {
+    (for ((exp, coeff) <- terms.toList.sortWith(_._1 < _._1)) yield coeff + "x^" + exp) mkString "+"
+  }
+}
+
+val p1 = new Poly(Map(1 -> 2.0, 3 -> 4.0, 5 -> 6.2))
+">>>
+Poly = 2.0x^1+4.0x^3+6.2x^5"
+val p2 = new Poly(Map(0 -> 3.0, 3 -> 7.0))
+">>>
+Poly = 3.0x^0+7.0x^3"
+p1 addWrong p2
+">>>
+Poly = 3.0x^0+2.0x^1+7.0x^3+6.2x^5"
+p1 addCourse p2
+">>>
+Poly = 3.0x^0+2.0x^1+11.0x^3+6.2x^5"
+p1 + p2
+">>>
+Poly = 3.0x^0+2.0x^1+11.0x^3+6.2x^5"
+```
+#### Using foldLeft
+```scala
+class Poly(val _terms: Map[Int, Double]) {
+  def this(bindings: (Int, Double)*) = this(bindings.toMap)
+
+  val terms = _terms withDefaultValue 0.0
+
+  /*same as List foldLeft `def sumFold(xs: List[Int]) = (xs foldLeft 0) (_ + _)`
+  * I guess the behaviour is that (thisMap foldLeft otherMap)(func)
+  * func(thisMap: Map[T,T], keyValPairOfOtherMap:(T,T)): Map[T,T] = {
+  * <do some operations that will return a Map>
+  * }
+  * */
+  def plus(other: Poly) = new Poly((terms foldLeft other.terms) (addTerm))
+
+  def addTerm(thisTerms: Map[Int, Double], otherTerm: (Int, Double)): Map[Int, Double] = {
+    val (exp, coeff) = otherTerm
+    /*
+    ms + (k -> v) :	The map containing all mappings of ms as well as the mapping k -> v from key k to value v
+    for example Map(3->7, 4->5) + (3->11) >>> Map(3 -> 11, 4 -> 5)
+    */
+    thisTerms + (exp -> (coeff + thisTerms(exp)))
+  }
+
+  override def toString: String = {
+    (for ((exp, coeff) <- terms.toList.sortWith(_._1 < _._1)) yield coeff + "x^" + exp) mkString "+"
+  }
+}
+
+val p1 = new Poly(1 -> 2.0, 3 -> 4.0, 5 -> 6.2)
+val p2 = new Poly(0 -> 3.0, 3 -> 7.0)
+p1 plus p2
+">>>
+Poly = 3.0x^0+2.0x^1+11.0x^3+6.2x^5"
+```
+#### Efficiency
+The `foldLeft` implementation is more efficient because it doesn't create the additional `(other.terms map adjustCourse)` structure before concatenation `terms ++ (other.terms map adjustCourse)`
